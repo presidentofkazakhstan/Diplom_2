@@ -17,6 +17,7 @@ public class GetOrderListTest {
     UserClient userClient;
     User user;
 
+    OrderClient orderClient;
     Order order;
     String accessToken;
 
@@ -26,10 +27,11 @@ public class GetOrderListTest {
         userGenerator = new RandomGenerator();
         userClient = new UserClient();
         order = new Order();
+        orderClient= new OrderClient();
         user = new User(userGenerator.userEmail, userGenerator.userPassword, userGenerator.userName);
         ValidatableResponse createUserResponse = userClient.create(user);
         accessToken = createUserResponse.extract().path("accessToken");
-        ValidatableResponse createResponse = order.createWithIngredients(order, accessToken);
+        ValidatableResponse createResponse = orderClient.createWithIngredients(order, accessToken);
         orderId = createResponse.extract().path("order._id");
     }
 
@@ -41,19 +43,19 @@ public class GetOrderListTest {
     @Test
     @DisplayName("Get Order With Token")
     public void getOrderWithToken() {
-        ValidatableResponse getResponse = order.getOrderListWithToken(accessToken);
+        ValidatableResponse getResponse = orderClient.getOrderListWithToken(accessToken);
         int statusCode = getResponse.extract().statusCode();
         boolean isSuccess = getResponse.extract().path("success");
         String getOrderId = getResponse.extract().path("orders._id[0]");
         assertThat("", statusCode, equalTo(SC_OK));
-        assertThat("", isSuccess, is(not(false)));
+        assertThat("", isSuccess, is(true));
         assertThat("", getOrderId, equalTo(orderId));
     }
 
     @Test
     @DisplayName("Get Order Without Token")
     public void getOrderWithoutToken() {
-        ValidatableResponse getResponse = order.getOrderListWithoutToken();
+        ValidatableResponse getResponse = orderClient.getOrderListWithoutToken();
         int statusCode = getResponse.extract().statusCode();
         boolean isSuccess = getResponse.extract().path("success");
         assertThat("", statusCode, equalTo(SC_UNAUTHORIZED));

@@ -51,7 +51,7 @@ public class CreateUserTest {
         ValidatableResponse secondCreateResponse = userClient.create(user);
         int statusCode = secondCreateResponse.extract().statusCode();
         String textMessage = secondCreateResponse.extract().path("message");
-
+        accessToken = secondCreateResponse.extract().path("accessToken");
         assertThat("User created", statusCode, equalTo(SC_FORBIDDEN));
         assertThat("User created", textMessage, is("User already exists"));
     }
@@ -63,7 +63,7 @@ public class CreateUserTest {
         ValidatableResponse createResponse = userClient.create(userWithoutPassword);
         int statusCode = createResponse.extract().statusCode();
         String textMessage = createResponse.extract().path("message");
-
+        accessToken = createResponse.extract().path("accessToken");
         assertThat("User created", statusCode, equalTo(SC_FORBIDDEN));
         assertThat("User created", textMessage, is("Email, password and name are required fields"));
     }
